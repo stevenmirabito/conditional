@@ -3,12 +3,7 @@ from datetime import datetime
 import uuid
 import structlog
 
-from flask import Blueprint, jsonify, redirect, request
-
-from conditional.util.ldap import ldap_get_current_students
-from conditional.util.ldap import ldap_is_eboard
-from conditional.util.ldap import ldap_is_eval_director
-from conditional.util.ldap import ldap_get_active_members
+from flask import Blueprint, jsonify, request, g
 
 from conditional.models.models import CurrentCoops
 from conditional.models.models import CommitteeMeeting
@@ -23,8 +18,9 @@ from conditional.models.models import MemberHouseMeetingAttendance
 from conditional.models.models import FreshmanAccount
 
 from conditional.util.flask import render_template
+from conditional.util.auth import restrict_eboard, restrict_evals
 
-from conditional import db
+from conditional import db, auth, ldap
 
 logger = structlog.get_logger()
 
@@ -36,12 +32,14 @@ def get_name(m):
 
 
 @attendance_bp.route('/attendance/ts_members')
+@auth.oidc_auth
+@restrict_eboard
 def get_all_members():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='retrieve technical seminar attendance list')
 
-    members = ldap_get_current_students()
+    members = ldap.get_current_students()
 
     named_members = [
         {
@@ -66,14 +64,16 @@ def get_all_members():
 
 
 @attendance_bp.route('/attendance/hm_members')
+@auth.oidc_auth
+@restrict_evals
 def get_non_alumni_non_coop(internal=False):
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='retrieve house meeting attendance list')
 
     # Only Members Who Have Paid Dues Are Required to
     # go to house meetings
-    non_alumni_members = ldap_get_active_members()
+    non_alumni_members = ldap.get_active_members()
     coop_members = [u.username for u in CurrentCoops.query.all()]
 
     named_members = [
@@ -105,12 +105,14 @@ def get_non_alumni_non_coop(internal=False):
 
 
 @attendance_bp.route('/attendance/cm_members')
+@auth.oidc_auth
+@restrict_eboard
 def get_non_alumni():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='retrieve committee meeting attendance list')
 
-    non_alumni_members = ldap_get_current_students()
+    non_alumni_members = ldap.get_current_students()
 
     named_members = [
         {
@@ -134,64 +136,49 @@ def get_non_alumni():
 
 
 @attendance_bp.route('/attendance_cm')
+@auth.oidc_auth
+@restrict_eboard
 def display_attendance_cm():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display committee meeting attendance page')
 
-    user_name = request.headers.get('x-webauth-user')
-    if not ldap_is_eboard(user_name):
-        return redirect("/dashboard")
-
-    return render_template(request,
-                           'attendance_cm.html',
-                           username=user_name,
+    return render_template('attendance_cm.html',
                            date=datetime.now().strftime("%Y-%m-%d"))
 
 
 @attendance_bp.route('/attendance_ts')
+@auth.oidc_auth
+@restrict_eboard
 def display_attendance_ts():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display technical seminar attendance page')
 
-    user_name = request.headers.get('x-webauth-user')
-    if not ldap_is_eboard(user_name):
-        return redirect("/dashboard")
-
-    return render_template(request,
-                           'attendance_ts.html',
-                           username=user_name,
+    return render_template('attendance_ts.html',
                            date=datetime.now().strftime("%Y-%m-%d"))
 
 
 @attendance_bp.route('/attendance_hm')
+@auth.oidc_auth
+@restrict_evals
 def display_attendance_hm():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display house meeting attendance page')
 
-    user_name = request.headers.get('x-webauth-user')
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard")
-
-    return render_template(request,
-                           'attendance_hm.html',
-                           username=user_name,
+    return render_template('attendance_hm.html',
                            date=datetime.now().strftime("%Y-%m-%d"),
                            members=get_non_alumni_non_coop(internal=True))
 
 
 @attendance_bp.route('/attendance/submit/cm', methods=['POST'])
+@auth.oidc_auth
+@restrict_eboard
 def submit_committee_attendance():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='submit committee meeting attendance')
-
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eboard(user_name):
-        return "must be eboard", 403
 
     post_data = request.get_json()
 
@@ -224,16 +211,13 @@ def submit_committee_attendance():
 
 
 @attendance_bp.route('/attendance/submit/ts', methods=['POST'])
+@auth.oidc_auth
+@restrict_eboard
 def submit_seminar_attendance():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4())
                      )
     log.info('api', action='submit technical seminar attendance')
-
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eboard(user_name):
-        return "must be eboard", 403
 
     post_data = request.get_json()
 
@@ -266,17 +250,14 @@ def submit_seminar_attendance():
 
 
 @attendance_bp.route('/attendance/submit/hm', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def submit_house_attendance():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='submit house meeting attendance')
 
     # status: Attended | Excused | Absent
-
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return "must be evals", 403
 
     post_data = request.get_json()
 
@@ -318,12 +299,9 @@ def submit_house_attendance():
 
 
 @attendance_bp.route('/attendance/alter/hm/<uid>/<hid>', methods=['GET'])
+@auth.oidc_auth
+@restrict_evals
 def alter_house_attendance(uid, hid):
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return "must be evals", 403
-
     if not uid.isdigit():
         member_meeting = MemberHouseMeetingAttendance.query.filter(
             MemberHouseMeetingAttendance.uid == uid,
@@ -344,15 +322,12 @@ def alter_house_attendance(uid, hid):
 
 
 @attendance_bp.route('/attendance/alter/hm/<uid>/<hid>', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def alter_house_excuse(uid, hid):
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='edit house meeting excuse')
-
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return "must be eval director", 403
 
     post_data = request.get_json()
     hm_status = post_data['status']

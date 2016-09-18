@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from conditional import db
+from conditional import db, ldap
 from conditional.models import models, old_models as zoo
 import flask_migrate
 
@@ -303,15 +303,14 @@ def migrate_models():
     # ==========
 
     print("BEGIN: ON FLOOR")
-    import conditional.util.ldap as ldap
     from datetime import datetime
-    members = [m['uid'][0].decode('utf-8') for m in ldap.ldap_get_onfloor_members()]
+    members = [m['uid'][0].decode('utf-8') for m in ldap.get_onfloor_members()]
     for m in members:
         db.session.add(models.OnFloorStatusAssigned(m, datetime.now()))
     print("END: ON FLOOR")
 
     print("BEGIN: SPRING EVALS")
-    members = [m['uid'][0].decode('utf-8') for m in ldap.ldap_get_active_members()]
+    members = [m['uid'][0].decode('utf-8') for m in ldap.get_active_members()]
     for m in members:
         db.session.add(models.SpringEval(m))
     print("END: SPRING EVALS")

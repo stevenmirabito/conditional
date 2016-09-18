@@ -1,10 +1,7 @@
 import uuid
 import structlog
 
-from flask import Blueprint, request
-
-from conditional.util.ldap import ldap_get_active_members
-from conditional.util.ldap import ldap_get_name
+from flask import Blueprint, g
 
 from conditional.models.models import MemberCommitteeAttendance
 from conditional.models.models import MemberHouseMeetingAttendance
@@ -15,7 +12,7 @@ from conditional.models.models import HousingEvalsSubmission
 
 from conditional.util.flask import render_template
 
-from conditional import db
+from conditional import db, auth, ldap
 
 spring_evals_bp = Blueprint('spring_evals_bp', __name__)
 
@@ -23,8 +20,9 @@ logger = structlog.get_logger()
 
 
 @spring_evals_bp.route('/spring_evals/')
+@auth.oidc_auth
 def display_spring_evals(internal=False):
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display membership evaluations listing')
 
@@ -32,16 +30,15 @@ def display_spring_evals(internal=False):
         return len([a for a in MemberCommitteeAttendance.query.filter(
             MemberCommitteeAttendance.uid == member_id)])
 
-    user_name = None
-    if not internal:
-        user_name = request.headers.get('x-webauth-user')
-
-    members = [m['uid'] for m in ldap_get_active_members()]
+    # TODO FIXME XXX: Replace this line and update the logic below when models have UUIDs
+    # members = [m['entryUUID'][0].decode('utf-8') for m in ldap.get_active_members()]
+    members = ldap.get_active_members()
 
     sp_members = []
-    for member_uid in members:
-        uid = member_uid[0].decode('utf-8')
-        print(uid)
+    for member in members:
+        uid = member['uid'][0].decode('utf-8')
+        member_uuid = member['entryUUID'][0].decode('utf-8')
+
         spring_entry = SpringEval.query.filter(
             SpringEval.uid == uid and
             SpringEval.active).first()
@@ -76,7 +73,7 @@ def display_spring_evals(internal=False):
                           MemberHouseMeetingAttendance.attendance_status == "Absent"
                       )]
         member = {
-            'name': ldap_get_name(uid),
+            'name': ldap.get_name(member_uuid),
             'uid': uid,
             'status': spring_entry.status,
             'committee_meetings': get_cm_count(uid),
@@ -119,7 +116,5 @@ def display_spring_evals(internal=False):
     if internal:
         return sp_members
     else:
-        return render_template(request,
-                               'spring_evals.html',
-                               username=user_name,
+        return render_template('spring_evals.html',
                                members=sp_members)

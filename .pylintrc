@@ -87,7 +87,7 @@ max-statements = 55
 max-parents = 7
 max-attributes = 10
 min-public-methods = 2
-max-public-methods = 20
+max-public-methods = 25
 
 [EXCEPTIONS]
 overgeneral-exceptions = Exception

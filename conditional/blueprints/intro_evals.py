@@ -2,10 +2,9 @@ from datetime import datetime
 import uuid
 import structlog
 
-from flask import Blueprint, request
+from flask import Blueprint, g
 
-from conditional.util.ldap import ldap_get_intro_members
-from conditional.util.ldap import ldap_get_name
+from conditional import auth, ldap
 
 from conditional.models.models import FreshmanCommitteeAttendance
 from conditional.models.models import MemberCommitteeAttendance
@@ -25,8 +24,9 @@ logger = structlog.get_logger()
 
 
 @intro_evals_bp.route('/intro_evals/')
+@auth.oidc_auth
 def display_intro_evals(internal=False):
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display intro evals listing')
 
@@ -39,11 +39,9 @@ def display_intro_evals(internal=False):
         return len([a for a in FreshmanCommitteeAttendance.query.filter(
             FreshmanCommitteeAttendance.fid == member_id)])
 
-    user_name = None
-    if not internal:
-        user_name = request.headers.get('x-webauth-user')
-
-    members = [m['uid'] for m in ldap_get_intro_members()]
+    # TODO FIXME XXX: Replace this line and update the logic below when models have UUIDs
+    # members = [m['entryUUID'][0].decode('utf-8') for m in ldap.get_intro_members()]
+    members = ldap.get_intro_members()
 
     ie_members = []
 
@@ -100,8 +98,10 @@ def display_intro_evals(internal=False):
         ie_members.append(freshman)
 
     # freshmen who have accounts
-    for member_uid in members:
-        uid = member_uid[0].decode('utf-8')
+    for member in members:
+        uid = member['uid'][0].decode('utf-8')
+        member_uuid = member['entryUUID'][0].decode('utf-8')
+
         freshman_data = FreshmanEvalData.query.filter(
             FreshmanEvalData.uid == uid).first()
 
@@ -116,7 +116,7 @@ def display_intro_evals(internal=False):
                           MemberHouseMeetingAttendance.attendance_status == "Absent"
                       )]
         member = {
-            'name': ldap_get_name(uid),
+            'name': ldap.get_name(member_uuid),
             'uid': uid,
             'eval_date': freshman_data.eval_date.strftime("%Y-%m-%d"),
             'signatures_missed': freshman_data.signatures_missed,
@@ -158,8 +158,4 @@ def display_intro_evals(internal=False):
     if internal:
         return ie_members
     else:
-        # return names in 'first last (username)' format
-        return render_template(request,
-                               'intro_evals.html',
-                               username=user_name,
-                               members=ie_members)
+        return render_template('intro_evals.html', members=ie_members)

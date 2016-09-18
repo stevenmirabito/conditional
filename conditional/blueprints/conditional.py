@@ -4,15 +4,14 @@ from datetime import datetime
 
 import structlog
 
-from flask import Blueprint, request, jsonify, redirect
+from flask import Blueprint, request, jsonify, g
 
-from conditional.util.ldap import ldap_get_name
-from conditional.util.ldap import ldap_is_eval_director
 from conditional.util.flask import render_template
+from conditional.util.auth import restrict_evals
 
 from conditional.models.models import Conditional
 
-from conditional import db
+from conditional import db, auth, ldap
 
 conditionals_bp = Blueprint('conditionals_bp', __name__)
 
@@ -20,17 +19,15 @@ logger = structlog.get_logger()
 
 
 @conditionals_bp.route('/conditionals/')
+@auth.oidc_auth
 def display_conditionals():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display conditional listing page')
 
-    # get user data
-    user_name = request.headers.get('x-webauth-user')
-
     conditionals = [
         {
-            'name': ldap_get_name(c.uid),
+            'name': ldap.get_name(c.uid),
             'date_created': c.date_created,
             'date_due': c.date_due,
             'description': c.description,
@@ -38,24 +35,19 @@ def display_conditionals():
         } for c in
         Conditional.query.filter(
             Conditional.status == "Pending")]
-    # return names in 'first last (username)' format
-    return render_template(request,
-                           'conditional.html',
-                           username=user_name,
+
+    return render_template('conditional.html',
                            conditionals=conditionals,
                            conditionals_len=len(conditionals))
 
 
 @conditionals_bp.route('/conditionals/create', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def create_conditional():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='create new conditional')
-
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return "must be eval director", 403
 
     post_data = request.get_json()
 
@@ -71,16 +63,12 @@ def create_conditional():
 
 
 @conditionals_bp.route('/conditionals/review', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def conditional_review():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='review a conditional')
-
-    # get user data
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard", code=302)
 
     post_data = request.get_json()
     cid = post_data['id']
@@ -100,18 +88,16 @@ def conditional_review():
 
 
 @conditionals_bp.route('/conditionals/delete/<cid>', methods=['DELETE'])
+@auth.oidc_auth
+@restrict_evals
 def conditional_delete(cid):
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='delete conditional')
 
-    user_name = request.headers.get('x-webauth-user')
-    if ldap_is_eval_director(user_name):
-        Conditional.query.filter(
-            Conditional.id == cid
-        ).delete()
-        db.session.flush()
-        db.session.commit()
-        return jsonify({"success": True}), 200
-    else:
-        return "Must be evals director to delete!", 401
+    Conditional.query.filter(
+        Conditional.id == cid
+    ).delete()
+    db.session.flush()
+    db.session.commit()
+    return jsonify({"success": True}), 200

@@ -5,18 +5,17 @@ from datetime import datetime
 
 import structlog
 
-from flask import Blueprint, jsonify, redirect, request
+from flask import Blueprint, jsonify, request, g
 
 from conditional.util.flask import render_template
+from conditional.util.auth import restrict_evals
 from conditional.blueprints.intro_evals import display_intro_evals
 from conditional.blueprints.spring_evals import display_spring_evals
-
-from conditional.util.ldap import ldap_is_eval_director
 
 from conditional.models.models import FreshmanEvalData
 from conditional.models.models import SpringEval
 
-from conditional import db
+from conditional import db, auth
 
 
 logger = structlog.get_logger()
@@ -25,25 +24,23 @@ slideshow_bp = Blueprint('slideshow_bp', __name__)
 
 
 @slideshow_bp.route('/slideshow/intro')
+@auth.oidc_auth
+@restrict_evals
 def slideshow_intro_display():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display intro slideshow')
 
-    user_name = request.headers.get('x-webauth-user')
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard")
-
-    return render_template(request,
-                           'intro_eval_slideshow.html',
-                           username=user_name,
+    return render_template('intro_eval_slideshow.html',
                            date=datetime.now().strftime("%Y-%m-%d"),
                            members=display_intro_evals(internal=True))
 
 
 @slideshow_bp.route('/slideshow/intro/members')
+@auth.oidc_auth
+@restrict_evals
 def slideshow_intro_members():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='retrieve intro members slideshow data')
 
@@ -54,16 +51,12 @@ def slideshow_intro_members():
 
 
 @slideshow_bp.route('/slideshow/intro/review', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def slideshow_intro_review():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='submit intro member evaluation')
-
-    # get user data
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard", code=302)
 
     post_data = request.get_json()
     uid = post_data['uid']
@@ -84,25 +77,23 @@ def slideshow_intro_review():
 
 
 @slideshow_bp.route('/slideshow/spring')
+@auth.oidc_auth
+@restrict_evals
 def slideshow_spring_display():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('frontend', action='display membership evaluations slideshow')
 
-    user_name = request.headers.get('x-webauth-user')
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard")
-
-    return render_template(request,
-                           'spring_eval_slideshow.html',
-                           username=user_name,
+    return render_template('spring_eval_slideshow.html',
                            date=datetime.now().strftime("%Y-%m-%d"),
                            members=display_spring_evals(internal=True))
 
 
 @slideshow_bp.route('/slideshow/spring/members')
+@auth.oidc_auth
+@restrict_evals
 def slideshow_spring_members():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='retreive membership evaluations slideshow daat')
 
@@ -113,16 +104,12 @@ def slideshow_spring_members():
 
 
 @slideshow_bp.route('/slideshow/spring/review', methods=['POST'])
+@auth.oidc_auth
+@restrict_evals
 def slideshow_spring_review():
-    log = logger.new(user_name=request.headers.get("x-webauth-user"),
+    log = logger.new(user_id=g.userinfo['uuid'],
                      request_id=str(uuid.uuid4()))
     log.info('api', action='submit membership evaulation')
-
-    # get user data
-    user_name = request.headers.get('x-webauth-user')
-
-    if not ldap_is_eval_director(user_name):
-        return redirect("/dashboard", code=302)
 
     post_data = request.get_json()
     uid = post_data['uid']

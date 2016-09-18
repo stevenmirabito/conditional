@@ -1,6 +1,5 @@
 from functools import lru_cache
-from conditional.util.ldap import ldap_get_housing_points, ldap_get_room_number, ldap_get_name, ldap_is_active, \
-    ldap_is_current_student
+from conditional import ldap
 from conditional.models import models
 
 
@@ -10,15 +9,16 @@ def get_housing_queue():
         {
             'uid': m.uid,
             'time': m.onfloor_granted,
-            'points': ldap_get_housing_points(m.uid)
+            'points': ldap.get_housing_points(m.uid)
         } for m in models.OnFloorStatusAssigned.query.all()
-        if ldap_is_active(m.uid)]
+        if ldap.is_active(ldap.get_uuid_for_uid(m.uid))]
 
     # sort by housing points then by time in queue
     ofm.sort(key=lambda m: m['time'])
     ofm.sort(key=lambda m: m['points'], reverse=True)
 
-    queue = [m['uid'] for m in ofm if ldap_get_room_number(m['uid']) == "N/A" and ldap_is_current_student(m['uid'])]
+    queue = [m['uid'] for m in ofm if ldap.get_room_number(ldap.get_uuid_for_uid(m['uid'])) == "N/A" and
+             ldap.is_current_student(ldap.get_uuid_for_uid(m['uid']))]
 
     return queue
 
@@ -28,9 +28,9 @@ def get_queue_with_points():
         {
             'uid': m.uid,
             'time': m.onfloor_granted,
-            'points': ldap_get_housing_points(m.uid)
+            'points': ldap.get_housing_points(m.uid)
         } for m in models.OnFloorStatusAssigned.query.all()
-        if ldap_is_active(m.uid)]
+        if ldap.is_active(ldap.get_uuid_for_uid(m.uid))]
 
     # sort by housing points then by time in queue
     ofm.sort(key=lambda m: m['time'])
@@ -38,9 +38,10 @@ def get_queue_with_points():
 
     queue = [
         {
-            'name': ldap_get_name(m['uid']),
+            'name': ldap.get_name(ldap.get_uuid_for_uid(m['uid'])),
             'points': m['points']
-        } for m in ofm if ldap_get_room_number(m['uid']) == "N/A" and ldap_is_current_student(m['uid'])]
+        } for m in ofm if ldap.get_room_number(ldap.get_uuid_for_uid(m['uid'])) == "N/A" and
+        ldap.is_current_student(ldap.get_uuid_for_uid(m['uid']))]
 
     return queue
 
