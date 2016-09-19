@@ -10,7 +10,10 @@ import requests
 
 app = Flask(__name__)
 
-app.config.from_pyfile(os.path.join(os.getcwd(), "config.py"))
+if os.path.exists(os.path.join(os.getcwd(), "config.py")):
+    app.config.from_pyfile(os.path.join(os.getcwd(), "config.py"))
+else:
+    app.config.from_pyfile(os.path.join(os.getcwd(), "config.env.py"))
 
 auth_overrides = None
 if 'AUTH_OVERRIDES' in app.config:

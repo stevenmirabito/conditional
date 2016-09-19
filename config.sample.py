@@ -7,7 +7,7 @@ SERVER_NAME = 'localhost:6969'
 APP_NAME = 'conditional'
 IP = '0.0.0.0'
 PORT = 6969
-SECRET_KEY = 'vdZzY5zua9jZu92Et7q4uNJB' # Change this!
+SECRET_KEY = 'thisisntverysecure'
 
 # OpenID Connect SSO config
 OIDC_ISSUER = 'https://sso.csh.rit.edu/auth/realms/csh'
@@ -38,3 +38,4 @@ LDAP_COMMITTEE_OU = 'ou=Committees,dc=csh,dc=rit,dc=edu'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(os.getcwd(), "data.db"))
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 ZOO_DATABASE_URI = 'mysql+pymysql://user:pass@host/database'
+

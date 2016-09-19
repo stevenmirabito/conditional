@@ -1,13 +1,34 @@
+sudo: required
 language: python
 python:
-  - "3.3"
-
+- 3.5
+services:
+- docker
+cache:
+  pip: true
+  directories:
+  - node_modules
+before_install:
+- curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+- nvm install
+- nvm use
+- npm install -g gulp
 install:
-  - "pip install -r requirements.txt"
-  - "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.7/install.sh | bash"
-  - "nvm install"
-  - "nvm use"
-  - "npm install -g gulp"
-  - "npm install"
+- pip install -r requirements.txt
+- npm install
 script:
-  - "gulp production"
+- gulp production
+- docker build -f Dockerfile -t $REPO:$COMMIT .
+after_success:
+- docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO
+env:
+  global:
+  - REPO=computersciencehouse/conditional
+  - COMMIT=${TRAVIS_COMMIT::8}
+notifications:
+  slack:
+    secure: Cm6d+6PmRYGGUBTQo83rOmjyw1w7ObXQONwUIpt2iusF26mjKmisrGXhhltI7Nrx8sY1+Cvz1m+43s1qGvPUS2APmiJ0jdi7tJddEgmCmA2Y7h8rHS37EKOvozVj4GJBxLkdPZ1QH1RZMiYVGuJLuBK4e0s+5HAEPfZTkKc2Udg7UqfUfOC5TNH29I1bZ+enj7Dfehq4r6007pWxGAl32bdkgckz67mUcKQ8ARqjQJi67pi9Wzhu+RoSA3dRbifmAZZH+OYVMawKrgxW4QdYw7IfSnzXAjTQ8of+gpw15N/4zB4lYMifK48TaSPrqVHzJndDLxbl7yfxycpmmCqlmcMwQXV8QDIHitJlenvZK1XJi9UhW4XrCSPPpiaGAmMjgJ6YslstPtPHdcAMYp3imRh3s/G+wRZ2kF9Y3Crx0kFboFVl9BfRXfIM2j+Q+xKGKvQIt2kJnPyU+HMCV0mbF68cRMzEUL2vuqH2cIqZCvxJDHJmnBxaP0LSyLJ2cim2fuvZEqSN76RfJ9jmk10eFj53FVGhHQmnI/JC2Jd31LRiLj9JtvYGN5R9TsV0/tUn43TTWyWCiJBELN0s3kcWZhQGHzYzZP8fiu1svOs8/bz/kTkQVt8RLCicMP+Tf234sNyWTihCTD3VpLfmzKd+lciMMwbJ+EMx+EyEUgq3Bm4=

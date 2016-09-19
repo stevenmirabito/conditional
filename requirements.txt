@@ -11,3 +11,5 @@ flask_migrate
 pylint
 psycopg2
 flask_pyoidc
+gunicorn
+

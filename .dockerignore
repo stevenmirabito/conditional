@@ -1,0 +1,13 @@
+# Metadata files
+*.md
+
+# Frontend sources and dependencies
+frontend
+gulpfile.js
+node_modules
+
+# Sample Configuration
+config.sample.py
+
+# CI-specific files
+.travisci
