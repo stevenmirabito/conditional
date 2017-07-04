@@ -1,0 +1,2 @@
+recursive-include conditional/templates *
+recursive-include conditional/static *
