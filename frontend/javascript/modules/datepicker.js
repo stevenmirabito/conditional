@@ -1,5 +1,5 @@
 /* global $ */
-import "bootstrap-material-datetimepicker";
+import 'bootstrap-material-datetimepicker';
 
 export default class DatePicker {
   constructor(input) {
@@ -11,7 +11,7 @@ export default class DatePicker {
   render() {
     $(this.input).bootstrapMaterialDatePicker({
       weekStart: 0,
-      time: false
+      time: false,
     });
   }
 }

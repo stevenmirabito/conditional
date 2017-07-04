@@ -1,4 +1,5 @@
-import Dropzone from "dropzone";
+import Dropzone from 'dropzone';
+
 Dropzone.autoDiscover = false;
 
 export default class DropzoneUpload {
@@ -9,10 +10,10 @@ export default class DropzoneUpload {
 
   render() {
     const dz = new Dropzone(this.element); // eslint-disable-line new-cap
-    dz.on("complete", () => window.location.reload());
+    dz.on('complete', () => window.location.reload());
   }
 }
 
 Dropzone.options.uploadUser = {
-  acceptedFiles: ".csv"
+  acceptedFiles: '.csv',
 };

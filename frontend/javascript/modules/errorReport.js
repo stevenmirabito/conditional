@@ -8,12 +8,12 @@ export default class ErrorReport {
   }
 
   render() {
-    this.btn.addEventListener('click', () => this._invokeRavenModal());
+    this.btn.addEventListener('click', () => this.invokeRavenModal());
   }
 
-  _invokeRavenModal() {
+  invokeRavenModal() {
     Raven.showReportDialog({
-      eventId: this.eventId
+      eventId: this.eventId,
     });
   }
 }

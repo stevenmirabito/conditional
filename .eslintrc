@@ -1,19 +1,10 @@
 {
-    "extends": "google",
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "impliedStrict": true
-        }
-    },
-    "env": {
-        "browser": true,
-        "es6": true,
-        "commonjs": true,
-        "jquery": true
-    },
-    "rules": {
-        "no-new": 0
-    }
+  "extends": "airbnb-base",
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "rules": {
+    "no-new": 0
+  }
 }

@@ -1,98 +1,97 @@
 /* global fetch */
-import "whatwg-fetch";
-import Exception from "../exceptions/exception";
-import FetchException from "../exceptions/fetchException";
-import FetchUtil from "../utils/fetchUtil";
-import sweetAlert from "../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6.js"; // eslint-disable-line max-len
+import 'whatwg-fetch';
+import sweetAlert from '../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6'; // eslint-disable-line max-len
+import Exception from '../exceptions/exception';
+import FetchException from '../exceptions/fetchException';
+import FetchUtil from '../utils/fetchUtil';
 
 export default class MajorProjectStatus {
   constructor(control) {
     this.control = control;
     this.id = this.control.dataset.id;
     this.endpoint = '/major_project/review';
-    this.deleteEndpoint = '/major_project/delete/' + this.id;
+    this.deleteEndpoint = `/major_project/delete/${this.id}`;
     this.render();
   }
 
   render() {
-    if (this.control.tagName.toLowerCase() === "div") {
+    if (this.control.tagName.toLowerCase() === 'div') {
       // Evals director dropdown
       const options = this.control.querySelectorAll('[data-option]');
-      options.forEach(option => {
-        option.addEventListener('click', e => {
+      options.forEach((option) => {
+        option.addEventListener('click', (e) => {
           e.preventDefault();
-          this._changeStatus(e.target.dataset.option);
+          this.changeStatus(e.target.dataset.option);
         });
       });
     } else {
       // Member self-delete button
       this.control.addEventListener('click',
-          () => this._changeStatus('Delete'));
+          () => this.changeStatus('Delete'));
     }
   }
 
-  _changeStatus(option) {
-    if (option === "Delete") {
+  changeStatus(option) {
+    if (option === 'Delete') {
       FetchUtil.fetchWithWarning(this.deleteEndpoint, {
         method: 'DELETE',
         warningText: 'This action cannot be undone.',
-        successText: 'Major project deleted.'
+        successText: 'Major project deleted.',
       }, () => {
-        let dashboardContainer = this.control.closest(".mp-container");
+        const dashboardContainer = this.control.closest('.mp-container');
         if (dashboardContainer) {
           // Dashboard button
           $(dashboardContainer).hide();
         } else {
           // Major projects page button
-          $(this.control.closest(".panel")).fadeOut();
+          $(this.control.closest('.panel')).fadeOut();
         }
       });
     } else {
-      let payload = {
+      const payload = {
         id: this.id,
-        status: option
+        status: option,
       };
 
       fetch(this.endpoint, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        credentials: "same-origin",
-        body: JSON.stringify(payload)
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
       })
           .then(FetchUtil.checkStatus)
           .then(FetchUtil.parseJSON)
-          .then(response => {
-            if (response.hasOwnProperty('success') &&
-                response.success === true) {
-              let toggle = this.control.querySelector('.dropdown-toggle');
-              ["btn-success", "btn-danger", "btn-warning"]
+          .then((response) => {
+            if (response.success === true) {
+              const toggle = this.control.querySelector('.dropdown-toggle');
+              ['btn-success', 'btn-danger', 'btn-warning']
                   .forEach(classToRemove =>
                   toggle.classList.remove(classToRemove));
 
               const caret = document.createElement('span');
               caret.classList.add('caret');
-              toggle.text = option + " ";
+              toggle.text = `${option} `;
               toggle.appendChild(caret);
 
-              if (option === "Passed") {
-                toggle.classList.add("btn-success");
-              } else if (option === "Failed") {
-                toggle.classList.add("btn-danger");
+              if (option === 'Passed') {
+                toggle.classList.add('btn-success');
+              } else if (option === 'Failed') {
+                toggle.classList.add('btn-danger');
               } else {
-                toggle.classList.add("btn-warning");
+                toggle.classList.add('btn-warning');
               }
             } else {
-              sweetAlert("Uh oh...", "We're having trouble updating " +
-                  "this project right now. Please try again later.", "error");
+              sweetAlert('Uh oh...', "We're having trouble updating " +
+                  'this project right now. Please try again later.', 'error');
               throw new Exception(FetchException.REQUEST_FAILED, response);
             }
           })
-          .catch(error => {
-            sweetAlert("Uh oh...", "We're having trouble updating " +
-                "this project right now. Please try again later.", "error");
+          .catch((error) => {
+            sweetAlert('Uh oh...', "We're having trouble updating " +
+                'this project right now. Please try again later.', 'error');
             throw new Exception(FetchException.REQUEST_FAILED, error);
           });
     }

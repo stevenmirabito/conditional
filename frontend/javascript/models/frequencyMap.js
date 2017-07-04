@@ -16,10 +16,6 @@ export default class FrequencyMap {
     return this.map.set(key, value);
   }
 
-  entries() {
-    return this.map.entries();
-  }
-
   increment(key) {
     if (this.has(key)) {
       this.set(key, this.get(key) + 1);
@@ -32,12 +28,12 @@ export default class FrequencyMap {
     let highestFreq = 0;
     let highestKey = null;
 
-    for (let [key, freq] of this.entries()) {
+    this.map.forEach((freq, key) => {
       if (freq > highestFreq) {
         highestKey = key;
         highestFreq = freq;
       }
-    }
+    });
 
     return highestKey;
   }

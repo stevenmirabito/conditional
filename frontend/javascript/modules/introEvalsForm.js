@@ -1,4 +1,4 @@
-import FetchUtil from "../utils/fetchUtil";
+import FetchUtil from '../utils/fetchUtil';
 
 export default class IntroEvalsForm {
   constructor(form) {
@@ -9,21 +9,21 @@ export default class IntroEvalsForm {
 
   render() {
     this.form.querySelector('input[type=submit]')
-      .addEventListener('click', e => this._submitForm(e));
+      .addEventListener('click', e => this.submitForm(e));
   }
 
-  _submitForm(e) {
+  submitForm(e) {
     e.preventDefault();
 
-    let payload = {
+    const payload = {
       socialEvents:
         this.form.querySelector('textarea[name=social_events]').value,
       comments:
-        this.form.querySelector('textarea[name=comments]').value
+        this.form.querySelector('textarea[name=comments]').value,
     };
 
     FetchUtil.post(this.endpoint, payload, {
-      successText: "Your social events and comments have been updated."
+      successText: 'Your social events and comments have been updated.',
     });
   }
 }

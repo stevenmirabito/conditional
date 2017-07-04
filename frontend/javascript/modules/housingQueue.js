@@ -1,9 +1,9 @@
 /* global fetch */
 import 'whatwg-fetch';
+import sweetAlert from '../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6'; // eslint-disable-line max-len
 import Exception from '../exceptions/exception';
 import FetchException from '../exceptions/fetchException';
 import FetchUtil from '../utils/fetchUtil';
-import sweetAlert from '../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6.js'; // eslint-disable-line max-len
 
 export default class HousingQueue {
   constructor(queuePanel) {
@@ -29,11 +29,11 @@ export default class HousingQueue {
 
     // Retrieve the queue table's DataTables API object
     this.queueTableApi = $(this.queueTable).DataTable({ // eslint-disable-line new-cap
-      retrieve: true
+      retrieve: true,
     });
 
     // Add custom filtering function
-    $.fn.dataTable.ext.afnFiltering.push(HousingQueue._inQueueFilter);
+    $.fn.dataTable.ext.afnFiltering.push(HousingQueue.inQueueFilter);
 
     this.bindFilterButton();
     this.bindCheckboxes();
@@ -58,7 +58,7 @@ export default class HousingQueue {
 
   bindCheckboxes() {
     this.queuePanel.querySelectorAll('.col-in-queue > input[type="checkbox"]')
-        .forEach(toggle => {
+        .forEach((toggle) => {
           toggle.addEventListener('click', () => {
             const row = toggle.parentNode.parentNode;
             this.updateInQueue(toggle.dataset.uid, toggle.checked, row);
@@ -67,25 +67,24 @@ export default class HousingQueue {
   }
 
   updateInQueue(uid, inQueue, row) {
-    let payload = {
-      uid: uid,
-      inQueue: inQueue
+    const payload = {
+      uid,
+      inQueue,
     };
 
     fetch(this.endpoint, {
       method: 'PUT',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       credentials: 'same-origin',
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
       .then(FetchUtil.checkStatus)
       .then(FetchUtil.parseJSON)
-      .then(response => {
-        if (response.hasOwnProperty('success') &&
-          response.success === true) {
+      .then((response) => {
+        if (response.success === true) {
           if (inQueue) {
             row.classList.remove('disabled');
           } else {
@@ -97,7 +96,7 @@ export default class HousingQueue {
           throw new Exception(FetchException.REQUEST_FAILED, response);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         sweetAlert('Uh oh...', 'We\'re having trouble updating ' +
           'the queue right now. Please try again later.', 'error');
         throw new Exception(FetchException.REQUEST_FAILED, error);
@@ -107,7 +106,7 @@ export default class HousingQueue {
   /*
    * Custom filtering function that will remove rows that are not in the housing queue (unselected)
    */
-  static _inQueueFilter(settings, data, dataIndex) {
+  static inQueueFilter(settings, data, dataIndex) {
     // Check to see if we should apply the filter
     if (settings.nTable.dataset.show === 'current') {
       return settings.aoData[dataIndex].anCells[2]

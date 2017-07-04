@@ -22,29 +22,31 @@ module.exports = function (env) {
         context: jsSrc,
         plugins: [],
         resolve: {
-            root: jsSrc,
-            extensions: [''].concat(extensions)
+            modules: [jsSrc, 'node_modules'],
+            extensions: extensions
         },
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.js$/,
-                    loader: 'babel-loader',
-                    exclude: /node_modules/,
-                    query: config.tasks.js.babel
+                    use: [
+                      {
+                        loader: 'babel-loader',
+                        options: config.tasks.js.babel
+                      }
+                    ],
                 },
                 {
                     test: require.resolve("jquery"),
-                    loader: 'expose?$!expose?jQuery'
+                    use: 'expose-loader?$!expose?jQuery'
                 },
                 {
                     test: /bootstrap-material-datetimepicker/,
-                    loader: 'imports?moment'
+                    use: 'imports-loader?moment'
                 },
                 {
-                    test: /bootstrap-sweetalert.*$/,
-                    loader: 'babel-loader',
-                    query: config.tasks.js.babel
+                    test: /simple-masonry/,
+                    use: 'imports-loader?define=>false'
                 }
             ]
         }

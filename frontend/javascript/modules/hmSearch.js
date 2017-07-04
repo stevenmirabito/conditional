@@ -1,6 +1,6 @@
 /* global $ */
-import Exception from "../exceptions/exception";
-import HmSearchException from "../exceptions/hmSearchException";
+import Exception from '../exceptions/exception';
+import HmSearchException from '../exceptions/hmSearchException';
 
 export default class HouseMeetingSearch {
   constructor(input) {
@@ -11,7 +11,7 @@ export default class HouseMeetingSearch {
       throw new Exception(HmSearchException.TARGET_REQUIRED);
     }
 
-    if (this.target.tagName !== "TABLE") {
+    if (this.target.tagName !== 'TABLE') {
       throw new Exception(HmSearchException.NOT_A_TABLE);
     }
 
@@ -22,40 +22,40 @@ export default class HouseMeetingSearch {
     } else {
       // No, wait until it initializes before rendering
       // Must use jQuery to listen to events fired by DataTables
-      $(this.target).on("init.dt", () => this.render());
+      $(this.target).on('init.dt', () => this.render());
     }
   }
 
   render() {
     // Remove the event listner so this module doesn't try to render again
-    $(this.target).off("init.dt");
+    $(this.target).off('init.dt');
 
     // Add custom filtering function
-    $.fn.dataTable.ext.search.push(HouseMeetingSearch._alreadySelectedFilter);
+    $.fn.dataTable.ext.search.push(HouseMeetingSearch.alreadySelectedFilter);
 
     // Retrieve the target's DataTable API object
     this.api = $(this.target).DataTable({ // eslint-disable-line new-cap
-      retrieve: true
+      retrieve: true,
     });
 
     // Bind to the input
-    this.input.addEventListener("keydown", event => this._handleKey(event));
+    this.input.addEventListener('keydown', event => this.handleKey(event));
   }
 
-  _handleKey(event) {
+  handleKey(event) {
     // Did the user press enter?
-    let keyCode = event.keyCode || event.which;
+    const keyCode = event.keyCode || event.which;
     if (keyCode === 13) {
       // Yes, prevent form submission
       event.preventDefault();
 
-      this._handleKeyAction();
+      this.handleKeyAction();
 
       // Reset the table
       this.api.search('').draw();
 
       // Clear and refocus input
-      this.input.value = "";
+      this.input.value = '';
       this.input.focus();
     } else {
       // No, search and redraw the table
@@ -63,21 +63,21 @@ export default class HouseMeetingSearch {
     }
   }
 
-  _handleKeyAction() {
+  handleKeyAction() {
     // Check the first visible table row's checkbox
     this.api.table().body().firstElementChild
-      .querySelector("input[type=checkbox]").checked = true;
+      .querySelector('input[type=checkbox]').checked = true;
   }
 
   /*
    * Custom filtering function that will remove rows that are already selected
    */
-  static _alreadySelectedFilter(settings, data, dataIndex) {
+  static alreadySelectedFilter(settings, data, dataIndex) {
     // Only apply the filter if we're currently searching
-    if (typeof settings.oPreviousSearch.sSearch !== "undefined" &&
-        settings.oPreviousSearch.sSearch !== "") {
+    if (typeof settings.oPreviousSearch.sSearch !== 'undefined' &&
+        settings.oPreviousSearch.sSearch !== '') {
       return !settings.aoData[dataIndex].anCells[1]
-        .querySelector("input[type=checkbox]").checked;
+        .querySelector('input[type=checkbox]').checked;
     }
 
     return true;

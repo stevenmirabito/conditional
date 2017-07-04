@@ -1,17 +1,17 @@
 /* global fetch */
-import "whatwg-fetch";
-import Exception from "../exceptions/exception";
-import FetchException from "../exceptions/fetchException";
-import sweetAlert from "../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6.js"; // eslint-disable-line max-len
+import 'whatwg-fetch';
+import sweetAlert from '../../../node_modules/bootstrap-sweetalert/dev/sweetalert.es6'; // eslint-disable-line max-len
+import Exception from '../exceptions/exception';
+import FetchException from '../exceptions/fetchException';
 
 export default class FetchUtil {
   static checkStatus(response) {
     if (response.status < 200 || response.status > 300) {
-      sweetAlert("Uh oh...", "We're having trouble submitting this form" +
-          "right now. Please try again later.", "error");
+      sweetAlert('Uh oh...', "We're having trouble submitting this form" +
+          'right now. Please try again later.', 'error');
       throw new Exception(
         FetchException.REQUEST_FAILED,
-        "received response code " + response.status
+        `received response code ${response.status}`,
       );
     }
 
@@ -26,84 +26,84 @@ export default class FetchUtil {
     fetch(endpoint, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-      credentials: "same-origin",
-      body: JSON.stringify(payload)
+      credentials: 'same-origin',
+      body: JSON.stringify(payload),
     })
         .then(FetchUtil.checkStatus)
         .then(FetchUtil.parseJSON)
-        .then(response => {
-          if (response.hasOwnProperty('success') && response.success === true) {
+        .then((response) => {
+          if (response.success === true) {
             sweetAlert({
-              title: "Success!",
+              title: 'Success!',
               text: settings.successText,
-              type: "success",
-              confirmButtonText: "OK"
+              type: 'success',
+              confirmButtonText: 'OK',
             }, () => {
-              if (typeof callback === "function") {
+              if (typeof callback === 'function') {
                 callback();
               } else {
                 window.location.reload();
               }
             });
           } else {
-            sweetAlert("Uh oh...", "We're having trouble submitting this " +
-                "form right now. Please try again later.", "error");
+            sweetAlert('Uh oh...', "We're having trouble submitting this " +
+                'form right now. Please try again later.', 'error');
             throw new Exception(FetchException.REQUEST_FAILED, response);
           }
         })
-        .catch(error => {
-          sweetAlert("Uh oh...", "We're having trouble submitting this form " +
-              "right now. Please try again later.", "error");
+        .catch((error) => {
+          sweetAlert('Uh oh...', "We're having trouble submitting this form " +
+              'right now. Please try again later.', 'error');
           throw new Exception(FetchException.REQUEST_FAILED, error);
         });
   }
 
   static postWithWarning(endpoint, payload, settings, callback) {
     sweetAlert({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: settings.warningText,
-      type: "warning",
+      type: 'warning',
       showCancelButton: true,
       closeOnConfirm: false,
-      showLoaderOnConfirm: true
+      showLoaderOnConfirm: true,
     }, () => {
       fetch(endpoint, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        credentials: "same-origin",
-        body: JSON.stringify(payload)
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
       })
         .then(FetchUtil.checkStatus)
         .then(FetchUtil.parseJSON)
-        .then(response => {
-          if (response.hasOwnProperty('success') && response.success === true) {
+        .then((response) => {
+          if (response.success === true) {
             sweetAlert({
-              title: "Success!",
+              title: 'Success!',
               text: settings.successText,
-              type: "success",
-              confirmButtonText: "OK"
+              type: 'success',
+              confirmButtonText: 'OK',
             }, () => {
-              if (typeof callback === "function") {
+              if (typeof callback === 'function') {
                 callback();
               } else {
                 window.location.reload();
               }
             });
           } else {
-            sweetAlert("Uh oh...", "We're having trouble submitting this " +
-                        "form right now. Please try again later.", "error");
+            sweetAlert('Uh oh...', "We're having trouble submitting this " +
+                        'form right now. Please try again later.', 'error');
             throw new Exception(FetchException.REQUEST_FAILED, response);
           }
         })
-        .catch(error => {
-          sweetAlert("Uh oh...", "We're having trouble submitting this form " +
-                      "right now. Please try again later.", "error");
+        .catch((error) => {
+          sweetAlert('Uh oh...', "We're having trouble submitting this form " +
+                      'right now. Please try again later.', 'error');
           throw new Exception(FetchException.REQUEST_FAILED, error);
         });
     });
@@ -113,82 +113,80 @@ export default class FetchUtil {
     fetch(endpoint, {
       method: settings.method,
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
       },
-      credentials: "same-origin"
+      credentials: 'same-origin',
     })
         .then(FetchUtil.checkStatus)
         .then(FetchUtil.parseJSON)
-        .then(response => {
-          if (response.hasOwnProperty('success') &&
-              response.success === true) {
+        .then((response) => {
+          if (response.success === true) {
             sweetAlert({
-              title: "Success!",
+              title: 'Success!',
               text: settings.successText,
-              type: "success",
-              confirmButtonText: "OK"
+              type: 'success',
+              confirmButtonText: 'OK',
             }, () => {
-              if (typeof callback === "function") {
+              if (typeof callback === 'function') {
                 callback();
               } else {
                 window.location.reload();
               }
             });
           } else {
-            sweetAlert("Uh oh...", "We're having trouble submitting " +
-                "this form right now. Please try again later.", "error");
+            sweetAlert('Uh oh...', "We're having trouble submitting " +
+                'this form right now. Please try again later.', 'error');
             throw new Exception(FetchException.REQUEST_FAILED, response);
           }
         })
-        .catch(error => {
-          sweetAlert("Uh oh...", "We're having trouble submitting this " +
-              "form right now. Please try again later.", "error");
+        .catch((error) => {
+          sweetAlert('Uh oh...', "We're having trouble submitting this " +
+              'form right now. Please try again later.', 'error');
           throw new Exception(FetchException.REQUEST_FAILED, error);
         });
   }
 
   static fetchWithWarning(endpoint, settings, callback) {
     sweetAlert({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: settings.warningText,
-      type: "warning",
+      type: 'warning',
       showCancelButton: true,
       closeOnConfirm: false,
-      showLoaderOnConfirm: true
+      showLoaderOnConfirm: true,
     }, () => {
       fetch(endpoint, {
         method: settings.method,
         headers: {
-          Accept: 'application/json'
+          Accept: 'application/json',
         },
-        credentials: "same-origin"
+        credentials: 'same-origin',
       })
           .then(FetchUtil.checkStatus)
           .then(FetchUtil.parseJSON)
-          .then(response => {
-            if (response.hasOwnProperty('success') &&
-                response.success === true) {
+          .then((response) => {
+            if (response.success === true) {
               sweetAlert({
-                title: "Success!",
+                title: 'Success!',
                 text: settings.successText,
-                type: "success",
-                confirmButtonText: "OK"
+                type: 'success',
+                confirmButtonText: 'OK',
               }, () => {
-                if (typeof callback === "function") {
+                if (typeof callback === 'function') {
                   callback();
                 } else {
                   window.location.reload();
                 }
               });
             } else {
-              sweetAlert("Uh oh...", "We're having trouble submitting " +
-                  "this form right now. Please try again later.", "error");
+              sweetAlert('Uh oh...', "We're having trouble submitting " +
+                  'this form right now. Please try again later.', 'error');
               throw new Exception(FetchException.REQUEST_FAILED, response);
             }
           })
-          .catch(error => {
-            sweetAlert("Uh oh...", "We're having trouble submitting this " +
-                "form right now. Please try again later.", "error");
+          .catch((error) => {
+            sweetAlert('Uh oh...', "We're having trouble submitting this " +
+                'form right now. Please try again later.', 'error');
             throw new Exception(FetchException.REQUEST_FAILED, error);
           });
     });
