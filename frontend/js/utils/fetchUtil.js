@@ -11,7 +11,7 @@ export default class FetchUtil {
           'right now. Please try again later.', 'error');
       throw new Exception(
         FetchException.REQUEST_FAILED,
-        `received response code ${response.status}`,
+        `received response code ${response.status}` // eslint-disable-line comma-dangle
       );
     }
 

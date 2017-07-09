@@ -44,7 +44,7 @@ export default class Masonry {
     } catch (e) {
       throw new Exception(
         MasonryException.CANT_FIND_SHARED_SELECTOR,
-        e.message,
+        e.message // eslint-disable-line comma-dangle
       );
     }
 

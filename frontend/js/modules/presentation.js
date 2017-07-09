@@ -1,5 +1,6 @@
 import reveal from 'reveal.js';
 import FetchUtil from '../utils/fetchUtil';
+import '../../css/presentations.scss';
 
 export default class Presentation {
   constructor(element) {

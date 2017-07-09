@@ -2,9 +2,9 @@
 // 2014 (c) - Tristan Edwards
 // github.com/t4t5/sweetalert
 
-@import 'sweet-alert-animations';
-@import './node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/forms';
-@import 'ball-fall';
+@import "./sweet-alert-animations";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/mixins/forms";
+@import "~load-awesome/css/ball-fall";
 
 body {
   .stop-scrolling {
@@ -166,7 +166,7 @@ body {
         width: 5px;
         height: 29px;
         // i-letter body
-        content: '';
+        content: "";
       }
       &::after {
         position: absolute;
@@ -177,7 +177,7 @@ body {
         width: 7px;
         height: 7px;
         // i-letter dot
-        content: '';
+        content: "";
       }
     }
     &.sa-success {
@@ -191,7 +191,7 @@ body {
         width: 60px;
         height: 120px;
         // Emulate moving circular line
-        content: '';
+        content: "";
       }
       &::before {
         top: -7px;

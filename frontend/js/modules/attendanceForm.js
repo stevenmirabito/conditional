@@ -44,7 +44,7 @@ export default class AttendanceForm {
         Object.keys(this.fields).forEach((field) => {
           if (field === 'attendees') {
             const membersSplit = MemberUtil.splitFreshmenUpperclassmen(
-              this.fields[field].value.split(','),
+              this.fields[field].value.split(',') // eslint-disable-line comma-dangle
             );
             payload.freshmen = membersSplit.freshmen;
             payload.members = membersSplit.upperclassmen;

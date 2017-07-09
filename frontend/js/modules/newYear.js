@@ -35,7 +35,7 @@ export default class NewYear {
             })
             .then($('#new-clear').fadeOut(() => {
               $('#new-current').fadeIn();
-            }),
+            }) // eslint-disable-line comma-dangle
             ).catch((error) => {
               sweetAlert('Uh oh...', "We're having trouble submitting that " +
                           'action right now. Please try again later.', 'error');

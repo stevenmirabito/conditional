@@ -14,5 +14,6 @@ window.addEventListener('unhandledrejection', (err) => {
 /* eslint-disable import/first */
 import 'jquery';
 import 'bootstrap';
+import '../css/app.scss';
 import './modules';
 /* eslint-enable import/first */

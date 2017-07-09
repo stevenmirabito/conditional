@@ -14,9 +14,9 @@
  * @author Brian Reavis <brian@thirdroute.com>
  */
 
-@import './node_modules/csh-material-bootstrap/sass/variables';
-@import './node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/nav-divider';
-@import './node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/vendor-prefixes';
+@import "~csh-material-bootstrap/sass/variables";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/mixins/nav-divider";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/mixins/vendor-prefixes";
 $selectize-font-family: inherit !default;
 $selectize-font-size: inherit !default;
 $selectize-line-height: $line-height-computed !default;
@@ -61,7 +61,7 @@ $selectize-arrow-size: 5px !default;
 $selectize-arrow-color: $selectize-color-text !default;
 $selectize-arrow-offset: $selectize-padding-x + 5px !default;
 
-@import 'selectize';
+@import "~selectize-scss/src/selectize.scss";
 
 .selectize-dropdown {
   .optgroup {
@@ -77,7 +77,7 @@ $selectize-arrow-offset: $selectize-padding-x + 5px !default;
       display: block;
       margin-right: $selectize-padding-dropdown-item-x * -1;
       margin-left: $selectize-padding-dropdown-item-x * -1;
-      content: ' ';
+      content: " ";
     }
 
     &-header {

@@ -58,7 +58,7 @@ export default class ReviewMeeting {
 
     // Delete Button
     this.modal.querySelector('button.delete-btn').addEventListener('click', () =>
-      this.deleteMeeting(),
+      this.deleteMeeting() // eslint-disable-line comma-dangle
     );
 
     // Attendees
@@ -91,7 +91,7 @@ export default class ReviewMeeting {
       // Save details
       const payload = {};
       const membersSplit = MemberUtil.splitFreshmenUpperclassmen(
-        this.modal.querySelector('input[name="attendees"]').value.split(','),
+        this.modal.querySelector('input[name="attendees"]').value.split(',') // eslint-disable-line comma-dangle
       );
       payload.freshmen = membersSplit.freshmen;
       payload.members = membersSplit.upperclassmen;

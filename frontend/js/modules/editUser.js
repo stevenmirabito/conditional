@@ -96,11 +96,11 @@ export default class EditUser {
         node.querySelector('input[name=reason]').value = hm.excuse;
 
         node.querySelector('input[name=hm-excused]').addEventListener(
-            'click', e => e.target.classList.add('status-changed'),
+            'click', e => e.target.classList.add('status-changed') // eslint-disable-line comma-dangle
         );
 
         node.querySelector('input[name=reason]').addEventListener(
-            'input', e => e.target.classList.add('excuse-changed'),
+            'input', e => e.target.classList.add('excuse-changed') // eslint-disable-line comma-dangle
         );
 
         node.querySelector('button').addEventListener('click', (e) => {
@@ -165,7 +165,7 @@ export default class EditUser {
           successText: 'User has been marked as present.',
         }, () => {
           $(`#missedHm-${this.uid}-${id}`).fadeOut();
-        },
+        } // eslint-disable-line comma-dangle
     );
   }
 
@@ -217,11 +217,11 @@ export default class EditUser {
         node.querySelector('input[name=reason]').value = hm.excuse;
 
         node.querySelector('input[name=hm-excused]').addEventListener(
-            'click', e => e.target.classList.add('status-changed'),
+            'click', e => e.target.classList.add('status-changed') // eslint-disable-line comma-dangle
         );
 
         node.querySelector('input[name=reason]').addEventListener(
-            'input', e => e.target.classList.add('excuse-changed'),
+            'input', e => e.target.classList.add('excuse-changed') // eslint-disable-line comma-dangle
         );
 
         node.querySelector('button').addEventListener('click', (e) => {
@@ -238,17 +238,17 @@ export default class EditUser {
 
     // Save button
     modal.querySelector('button.save-btn').addEventListener('click', () =>
-      this.submitForm(),
+      this.submitForm() // eslint-disable-line comma-dangle
     );
 
     // Delete button
     modal.querySelector('button.delete-btn').addEventListener('click', () =>
-      this.deleteFreshman(),
+      this.deleteFreshman() // eslint-disable-line comma-dangle
     );
 
     // Upgrade button
     modal.querySelector('button.upgrade-btn').addEventListener('click', () =>
-      this.upgradeFreshman(),
+      this.upgradeFreshman() // eslint-disable-line comma-dangle
     );
 
     // Add to DOM and show, then remove on hide
