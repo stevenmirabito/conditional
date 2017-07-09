@@ -1,0 +1,19 @@
+{
+  "pkgFiles": ["package.json"],
+  "bump": [
+    "conditional/config.py"
+  ],
+  "buildCommand": "node tools/scripts/build.js",
+  "requireCleanWorkingDir": true,
+  "src": {
+    "commitMessage": "Release v%s",
+    "tagName": "v%s",
+    "tagAnnotation": "Release v%s",
+    "beforeStageCommand": "node tools/scripts/bump.js --increment=${increment}"
+  },
+  "github": {
+    "release": false,
+    "releaseName": "Conditional v%s",
+    "tokenRef": "GITHUB_TOKEN"
+  }
+}
