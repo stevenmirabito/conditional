@@ -1,0 +1,118 @@
+{
+  "projectName": "conditional",
+  "projectOwner": "ComputerScienceHouse",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "liam-middlebrook",
+      "name": "Liam Middlebrook",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3920942?v=3",
+      "profile": "http://liammiddlebrook.me",
+      "contributions": [
+        "code",
+        "bug",
+        "infra",
+        "talk",
+        "review"
+      ]
+    },
+    {
+      "login": "mbillow",
+      "name": "Marc Billow",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/8651166?v=3",
+      "profile": "http://www.marcbillow.com",
+      "contributions": [
+        "code",
+        "bug",
+        "review",
+        "design"
+      ]
+    },
+    {
+      "login": "stevenmirabito",
+      "name": "Steven Mirabito",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/704880?v=3",
+      "profile": "http://stevenmirabito.com/",
+      "contributions": [
+        "code",
+        "bug",
+        "tool",
+        "infra",
+        "review",
+        "design"
+      ]
+    },
+    {
+      "login": "csssuf",
+      "name": "James Forcier",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1261595?v=3",
+      "profile": "http://csssuf.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "RamZallan",
+      "name": "Ram Zallan",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/5818258?v=3",
+      "profile": "http://ramzallan.me",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    },
+    {
+      "login": "TalCohen",
+      "name": "Tal Cohen",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2976769?v=3",
+      "profile": "https://github.com/TalCohen",
+      "contributions": [
+        "code",
+        "bug",
+        "question"
+      ]
+    },
+    {
+      "login": "brandonhudson",
+      "name": "Brandon Hudson",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3893578?v=3",
+      "profile": "https://github.com/brandonhudson",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    },
+    {
+      "login": "audiolion",
+      "name": "Ryan Castner",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2430381?v=3",
+      "profile": "http://audiolion.github.io",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "sman591",
+      "name": "Stuart Olivera",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1441807?v=3",
+      "profile": "https://stuartolivera.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mgood15",
+      "name": "Meghan Good",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/14284544?v=3",
+      "profile": "https://github.com/mgood15",
+      "contributions": [
+        "question"
+      ]
+    }
+  ]
+}
