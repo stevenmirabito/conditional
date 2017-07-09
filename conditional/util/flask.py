@@ -13,7 +13,7 @@ from conditional.util.ldap import ldap_get_member
 from conditional.models.models import CommitteeMeeting
 from conditional.models.models import TechnicalSeminar
 
-from conditional import db
+from conditional import db, __version__
 
 
 def render_template(request, template_name, **kwargs):
@@ -54,4 +54,5 @@ def render_template(request, template_name, **kwargs):
         is_intromember=is_intromember,
         is_rtp=is_rtp,
         pending_review=(cm_review + ts_review),
+        version=__version__,
         **kwargs)

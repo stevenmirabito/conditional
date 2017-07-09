@@ -8,49 +8,23 @@ A comprehensive membership evaluations solution for Computer Science House.
 Development
 -----------
 
-To run the application, you must have the latest version of [Python 3](https://www.python.org/downloads/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) installed. Once you have those installed, create a new virtualenv and install the Python dependencies:
+Install [Docker](https://www.docker.com/community-edition) if you don't already have it and add your LDAP bind credenticals in `.env`:
 
 ```
-virtualenv ~/.venv/conditional -p python3
-source ~/.venv/conditional/bin/activate
-pip install -e .
-export FLASK_APP=app.py
+LDAP_BIND_DN=uid=[your CSH username],ou=Users,dc=csh,dc=rit,dc=edu
+LDAP_BIND_PASSWORD=[your CSH password]
 ```
 
-In addition, you must have [Node](https://nodejs.org) and [Yarn](https://yarnpkg.com/lang/en/docs/install) installed to compile the frontend. If you don't have Node installed, we recommending installing with [NVM](https://github.com/creationix/nvm):
+Then, simply run: `docker-compose up`
 
-```
-nvm install
-nvm use
-```
-
-Then, install the frontend dependencies:
-
-```
-yarn
-```
-
-You must create `config.py` in the top-level directory with the appropriate credentials for the application to run. See `config.sample.py` for an example.
-
-Once you have all of the dependencies installed, simply run:
-
-```
-yarn start
-```
-
-This will run the asset pipeline, start the Python server, and start BrowserSync. Your default web browser will open automatically. If it doesn't, navigate to `http://localhost:3000`. Any changes made to the frontend files in `frontend` or the Jinja templates in `conditional/templates` will cause the browser to reload automatically.
+Once everything has started, navigate to [http://localhost:3000](http://localhost:3000). Any changes made to the frontend files in `frontend` or the Jinja templates in `conditional/templates` will cause the browser to reload automatically.
 
 ### Database Migrations
 
-If the database schema is changed after initializing the database, you must migrate it to the new schema by running:
+If you change the database schema, you must generate a new migration by running:
 
 ```
-flask db upgrade
-```
-
-At the same time, if you change the database schema, you must generate a new migration by running:
-
-```
+export FLASK_APP=app.py
 flask db migrate
 ```
 
@@ -64,5 +38,6 @@ Conditional includes a utility to facilitate data migrations from the old Evals 
 
 ```
 pip install pymysql
+export FLASK_APP=app.py
 flask zoo
 ```

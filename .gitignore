@@ -74,12 +74,10 @@ target/
 /config.json
 /config.py
 /data.db
+/.env
 
 # Frontend dependencies
 /node_modules
 
 # Built frontend files
 /conditional/static/*
-
-# virtualenv
-/.conditionalenv

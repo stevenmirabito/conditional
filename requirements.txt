@@ -3,7 +3,6 @@ Flask
 flask_migrate
 flask_sqlalchemy
 gunicorn
-pbr
 psycopg2
 pylint
 raven[flask]

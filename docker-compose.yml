@@ -1,0 +1,33 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=conditional
+      - POSTGRES_PASSWORD=thisisntverysecure
+  backend:
+    build:
+      context: .
+      dockerfile: ./tools/Dockerfile-dev-backend
+    ports:
+      - "6969:6969"
+    volumes:
+      - .:/opt/conditional
+    environment:
+      - CONDITIONAL_DEBUG=true
+      - CONDITIONAL_DB_HOSTNAME=db
+      - CONDITIONAL_DB_USER=conditional
+      - CONDITIONAL_DB_PASSWORD=thisisntverysecure
+      - CONDITIONAL_LDAP_BIND_DN=${LDAP_BIND_DN}
+      - CONDITIONAL_LDAP_BIND_PASSWORD=${LDAP_BIND_PASSWORD}
+    depends_on:
+      - "db"
+  frontend:
+    build:
+      context: .
+      dockerfile: ./tools/Dockerfile-dev-frontend
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    volumes:
+      - .:/opt/conditional

@@ -1,15 +1,18 @@
-#######################################
-# Production Container for Conditional
-#######################################
+################################
+# Backend Development Container
+################################
 
 FROM python:3-alpine3.6
 MAINTAINER Computer Science House (evals@csh.rit.edu)
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 6969
 
 # Add the app user
 RUN adduser -S conditional
+
+# Set the working directory to the mounted volume
+WORKDIR /opt/conditional
 
 # Install some additional packages required for dependencies,
 # then configure OpenLDAP to use the system trusted CA store
@@ -25,18 +28,17 @@ RUN apk add --no-cache \
     && update-ca-certificates \
     && echo "tls_cacertdir /etc/ssl/certs" >> /etc/openldap/ldap.conf
 
-# Install the application
-RUN pip install --no-cache-dir -i https://repo.csh.rit.edu/repository/pypi conditional${CONDITIONAL_VERSION:+"=="}${CONDITIONAL_VERSION}
+# Install Python dependencies
+ADD requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt \
+    && rm -f /tmp/requirements.txt
 
 # Add wait-for-postgres
-ADD tools/wait-for-postgres.sh /
-RUN chmod 755 /wait-for-postgres.sh
+ADD tools/wait-for-postgres.sh /opt
+RUN chmod 755 /opt/wait-for-postgres.sh
 
 # Drop privileges
 USER conditional
 
-# Run application with gunicorn
-CMD ["/wait-for-postgres.sh", \
-     "gunicorn", "--workers=4", "--bind", \
-     "${CONDITIONAL_SERVER_IP:-0.0.0.0}:${CONDITIONAL_SERVER_PORT:-8080}", \
-     "conditional"]
+# Run the build and start the application
+CMD ["/opt/wait-for-postgres.sh", "python", "app.py"]

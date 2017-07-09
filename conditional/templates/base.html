@@ -13,7 +13,7 @@
         {% block extraHeader %}
         {% endblock %}
 
-        <title>{% block title %}{% endblock %}</title>
+        <title>{% block title %}{% endblock %} - CSH Evaluations</title>
     </head>
 
     <body>
@@ -35,7 +35,7 @@
         {% endif %}
 
         <footer>
-            <a class="footer-version" href="https://github.com/ComputerScienceHouse/conditional/tree/{{config["GIT_REVISION"]}}">Conditional ({{config["GIT_REVISION"]}})</a>
+            <a class="footer-version" href="https://github.com/ComputerScienceHouse/conditional/releases/tag/v{{version}}">Conditional ({{version}})</a>
         </footer>
         <script src="/static/js/app.js"></script>
     </body>

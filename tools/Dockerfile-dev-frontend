@@ -1,0 +1,29 @@
+################################
+# Frontend Development Container
+################################
+
+FROM node:8-alpine
+MAINTAINER Computer Science House (evals@csh.rit.edu)
+
+# Expose the BrowserSync ports
+EXPOSE 3000
+EXPOSE 3001
+
+# Add the app user
+RUN adduser -S conditional
+
+# Set the working directory to the mounted volume
+WORKDIR /opt/conditional
+
+# Install packages required to build native extensions
+RUN apk add --no-cache \
+        gcc \
+        make \
+        musl-dev \
+        python
+
+# Drop privileges
+USER conditional
+
+# Install dependencies and run the build
+CMD yarn --no-progress && yarn start

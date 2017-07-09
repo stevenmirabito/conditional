@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import Flask, redirect, request, render_template, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from alembic import command
 from csh_ldap import CSHLDAP
 from raven.contrib.flask import Sentry
 import structlog
@@ -72,6 +73,11 @@ structlog.configure(processors=[
 ])
 
 logger = structlog.get_logger()
+
+# Make sure the database is up-to-date
+with app.app_context():
+    logger.info('Migrating database')
+    command.upgrade(migrate.get_config(None), 'head', sql=False, tag=None)
 
 from conditional.blueprints.dashboard import dashboard_bp  # pylint: disable=ungrouped-imports
 from conditional.blueprints.attendance import attendance_bp
