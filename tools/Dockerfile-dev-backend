@@ -9,7 +9,7 @@ MAINTAINER Computer Science House (evals@csh.rit.edu)
 EXPOSE 6969
 
 # Add the app user
-RUN adduser -S conditional
+RUN adduser -u 1000 -S conditional
 
 # Set the working directory to the mounted volume
 WORKDIR /opt/conditional

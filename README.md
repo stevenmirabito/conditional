@@ -8,12 +8,18 @@ A comprehensive membership evaluations solution for Computer Science House.
 Development
 -----------
 
-Install [Docker](https://www.docker.com/community-edition) if you don't already have it and add your LDAP bind credenticals in `.env`:
+First time setup:
 
-```
-LDAP_BIND_DN=uid=[your CSH username],ou=Users,dc=csh,dc=rit,dc=edu
-LDAP_BIND_PASSWORD=[your CSH password]
-```
+1. Install [Docker](https://www.docker.com/community-edition) if you don't already have it.
+1. Add your LDAP bind credenticals in `.env` (or export the variables in your shell):
+
+		LDAP_BIND_DN=uid=[your CSH username],ou=Users,dc=csh,dc=rit,dc=edu
+		LDAP_BIND_PASSWORD=[your CSH password]
+
+1. If you're using Linux, run the following to fix permission issues with the development containers:
+
+		git config filter.uidfix.smudge "sed s/1000/$UID/g"
+		git config filter.uidfix.clean "sed s/$UID/1000/g"
 
 Then, simply run: `docker-compose up`
 
