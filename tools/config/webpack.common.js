@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   context: path.resolve(__dirname, '../../frontend'),
@@ -27,49 +28,6 @@ module.exports = {
         }],
       },
       {
-        test: /\.s?(a|c)ss$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].css',
-              outputPath: 'css/',
-              publicPath: '/static/css/',
-            }
-          },
-          'extract-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
-              plugins: [
-                require('autoprefixer')(),
-                require('cssnano')(),
-              ],
-            },
-          },
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(ttf|eot|woff|woff2|svg)$/,
-        loader: 'file-loader',
-        options: {
-          name: 'fonts/[name].[ext]',
-        },
-      },
-      {
         test: require.resolve('jquery'),
         use: [{
           loader: 'expose-loader',
@@ -93,6 +51,13 @@ module.exports = {
           options: 'define=>false',
         }],
       },
+      {
+        test: /\.(ttf|eot|woff|woff2|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'fonts/bootstrap/[name].[ext]',
+        },
+      },
     ],
   },
 
@@ -105,4 +70,8 @@ module.exports = {
   },
 
   target: 'web',
+
+  plugins: [
+    new webpack.ProgressPlugin({ profile: false }),
+  ],
 };

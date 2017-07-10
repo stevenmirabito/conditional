@@ -3,7 +3,7 @@
 Introductory Evaluations Slideshow
 {% endblock %}
 {% block extraHeader %}
-<link href="/static/css/presentations.css" rel="stylesheet">
+<link href="{{ config['STATIC_MANIFEST'].get('/static/css/presentations.scss', '/static/css/presentations.css') }}" rel="stylesheet">
 {% endblock %}
 {% block body %}
 

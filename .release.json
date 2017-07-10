@@ -3,7 +3,7 @@
   "bump": [
     "conditional/config.py"
   ],
-  "buildCommand": "node tools/scripts/build.js",
+  "buildCommand": "yarn build",
   "requireCleanWorkingDir": true,
   "src": {
     "commitMessage": "Release v%s",

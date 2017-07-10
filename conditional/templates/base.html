@@ -9,7 +9,7 @@
         <meta name="author" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
-        <link href="/static/css/app.css" rel="stylesheet">
+        <link href="{{ config['STATIC_MANIFEST'].get('/static/css/app.scss', '/static/css/app.css') }}" rel="stylesheet">
         {% block extraHeader %}
         {% endblock %}
 
@@ -35,8 +35,8 @@
         {% endif %}
 
         <footer>
-            <a class="footer-version" href="https://github.com/ComputerScienceHouse/conditional/releases/tag/v{{version}}">Conditional ({{version}})</a>
+            <a class="footer-version" href="https://github.com/ComputerScienceHouse/conditional/releases/tag/v{{ version }}">Conditional ({{ version }})</a>
         </footer>
-        <script src="/static/bundle.js"></script>
+        <script src="{{ config['STATIC_MANIFEST'].get('/static/app.js', '/static/app.js') }}"></script>
     </body>
 </html>
